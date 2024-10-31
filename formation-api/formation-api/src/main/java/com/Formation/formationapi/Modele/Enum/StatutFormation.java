@@ -1,4 +1,4 @@
-package com.Formation.Modele.Enum;
+package com.Formation.formationapi.Modele.Enum;
 
 public enum StatutFormation {
 	   PLANIFIEE,

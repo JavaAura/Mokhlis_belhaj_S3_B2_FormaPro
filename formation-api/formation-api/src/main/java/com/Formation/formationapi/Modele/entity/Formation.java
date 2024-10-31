@@ -1,4 +1,4 @@
-package com.Formation.Modele.entity;
+package com.Formation.formationapi.Modele.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import com.Formation.Modele.Enum.StatutFormation;
+import com.Formation.formationapi.Modele.Enum.StatutFormation;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 
@@ -61,4 +61,61 @@ public class Formation {
                      .<Apprenant>flatMap(classe -> classe.getApprenants().stream())
                      .collect(Collectors.toList());
     }
+
+
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }   
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNom() {
+        return nom;
+    }
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public Date getDateDebut() {
+		return dateDebut;
+	}
+
+	public void setDateDebut(Date dateDebut) {
+		this.dateDebut = dateDebut;
+	}
+
+	public Date getDateFin() {
+		return dateFin;
+	}
+
+	public void setDateFin(Date dateFin) {
+		this.dateFin = dateFin;
+	}
+
+	public StatutFormation getStatut() {
+		return statut;
+	}
+
+	public void setStatut(StatutFormation statut) {
+		this.statut = statut;
+	}
+
+	public List<Classe> getClasses() {
+		return classes;
+	}
+
+	public void setClasses(List<Classe> classes) {
+		this.classes = classes;
+	}
+    
 }

@@ -1,4 +1,4 @@
-package com.Formation.Modele.entity;
+package com.Formation.formationapi.Modele.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
