@@ -3,7 +3,6 @@ package com.Formation.Modele.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -47,10 +46,6 @@ public class Formation {
     private StatutFormation statut;
     @OneToMany(mappedBy = "formation")
     private List<Classe> classes;
-    
-    public enum StatutFormation {
-        PLANIFIEE, EN_COURS, TERMINEE, ANNULEE
-    }
     
     public List<Formateur> getFormateurs() {
         return classes == null ? Collections.emptyList() :
