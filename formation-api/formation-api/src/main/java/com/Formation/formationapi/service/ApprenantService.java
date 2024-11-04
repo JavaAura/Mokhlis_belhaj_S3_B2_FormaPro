@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.Formation.formationapi.Modele.entity.Apprenant;
 import com.Formation.formationapi.Repositories.ApprenantRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class ApprenantService {
@@ -13,8 +15,8 @@ public class ApprenantService {
     @Autowired
     private ApprenantRepository apprenantRepository;
 
-    public List<Apprenant> getAllApprenants() {
-        return apprenantRepository.findAll();
+    public Page<Apprenant> getAllApprenants(Pageable pageable) {
+        return apprenantRepository.findAll(pageable);
     }
 
     public Optional<Apprenant> getApprenantById(Long id) {
