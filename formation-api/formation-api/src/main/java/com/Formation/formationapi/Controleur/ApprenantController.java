@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.Formation.formationapi.service.ApprenantService;
 import com.Formation.formationapi.Modele.entity.Apprenant;
+import com.Formation.formationapi.Exceptions.ResourceNotFoundException;
+import com.Formation.formationapi.Exceptions.ValidationException;
 
 import java.util.Optional;
 
@@ -37,25 +39,33 @@ public class ApprenantController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Apprenant> getApprenantById(@PathVariable Long id) {
-        Optional<Apprenant> apprenant = apprenantService.getApprenantById(id);
-        return apprenant.map(ResponseEntity::ok)
-                       .orElse(ResponseEntity.notFound().build());
+        Apprenant apprenant = apprenantService.getApprenantById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Apprenant not found with id: " + id));
+        return ResponseEntity.ok(apprenant);
     }
 
     @PostMapping
     public ResponseEntity<Apprenant> createApprenant(@Valid @RequestBody Apprenant apprenant) {
+        // Check if email already exists
+        if (!apprenantService.getApprenantByEmail(apprenant.getEmail()).isEmpty()) {
+            throw new ValidationException("Email already exists: " + apprenant.getEmail());
+        }
         Apprenant newApprenant = apprenantService.createApprenant(apprenant);
         return ResponseEntity.ok(newApprenant);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Apprenant> updateApprenant(@PathVariable Long id, @RequestBody Apprenant apprenantDetails) {
-        Optional<Apprenant> optionalApprenant = apprenantService.getApprenantById(id);
-        if (!optionalApprenant.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
+        Apprenant apprenant = apprenantService.getApprenantById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Apprenant not found with id: " + id));
         
-        Apprenant apprenant = optionalApprenant.get();
+        // Check if new email already exists (if email is being updated)
+        if (apprenantDetails.getEmail() != null && 
+            !apprenantDetails.getEmail().equals(apprenant.getEmail()) && 
+            !apprenantService.getApprenantByEmail(apprenantDetails.getEmail()).isEmpty()) {
+            throw new ValidationException("Email already exists: " + apprenantDetails.getEmail());
+        }
+
         if (apprenantDetails.getNom() != null) {
             apprenant.setNom(apprenantDetails.getNom());
         }

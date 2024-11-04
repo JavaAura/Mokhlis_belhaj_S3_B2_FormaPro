@@ -2,12 +2,14 @@ package com.Formation.formationapi.Controleur;
 
 import com.Formation.formationapi.Modele.entity.Formation;
 import com.Formation.formationapi.service.FormationService;
+import com.Formation.formationapi.Exceptions.ResourceNotFoundException;
+import com.Formation.formationapi.Exceptions.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 import java.lang.reflect.Field;
 
 @RestController
@@ -19,7 +21,10 @@ public class FormationController {
 
     // Create
     @PostMapping
-    public ResponseEntity<Formation> createFormation(@RequestBody Formation formation) {
+    public ResponseEntity<Formation> createFormation(@Valid @RequestBody Formation formation) {
+        if (formation.getTitre() == null || formation.getTitre().trim().isEmpty()) {
+            throw new ValidationException("Le titre de la formation est obligatoire");
+        }
         Formation newFormation = formationService.saveFormation(formation);
         return ResponseEntity.ok(newFormation);
     }
@@ -34,19 +39,16 @@ public class FormationController {
     // Read one
     @GetMapping("/{id}")
     public ResponseEntity<Formation> getFormationById(@PathVariable Long id) {
-        Optional<Formation> formation = formationService.getFormationById(id);
-        return formation.isPresent() ? ResponseEntity.ok(formation.get()) : ResponseEntity.notFound().build();
+        Formation formation = formationService.getFormationById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + id));
+        return ResponseEntity.ok(formation);
     }
 
     // Update
     @PutMapping("/{id}")
-    public ResponseEntity<Formation> updateFormation(@PathVariable Long id, @RequestBody Formation formation) {
-        Optional<Formation> existingFormationOpt = formationService.getFormationById(id);
-        if (!existingFormationOpt.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        Formation existingFormation = existingFormationOpt.get();
+    public ResponseEntity<Formation> updateFormation(@PathVariable Long id, @Valid @RequestBody Formation formation) {
+        Formation existingFormation = formationService.getFormationById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Formation not found with id: " + id));
         
         try {
             for (Field field : formation.getClass().getDeclaredFields()) {
@@ -57,6 +59,8 @@ public class FormationController {
                         int intValue = (int) value;
                         if (intValue >= 1) {
                             field.set(existingFormation, value);
+                        } else {
+                            throw new ValidationException("Invalid value for field " + field.getName() + ": must be >= 1");
                         }
                     } else if (!value.toString().isEmpty()) {
                         field.set(existingFormation, value);
@@ -64,7 +68,7 @@ public class FormationController {
                 }
             }
         } catch (IllegalAccessException e) {
-            return ResponseEntity.badRequest().build();
+            throw new ValidationException("Error updating formation: " + e.getMessage());
         }
         
         existingFormation.setId(id);
@@ -75,10 +79,8 @@ public class FormationController {
     // Delete
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFormation(@PathVariable Long id) {
-        Optional<Formation> formation = formationService.getFormationById(id);
-        if (formation.isPresent()) {
-            formationService.deleteFormation(id);
-            return ResponseEntity.noContent().build();
+        if (!formationService.getFormationById(id).isPresent()) {
+            throw new ResourceNotFoundException("Formation not found with id: " + id);
         }
         formationService.deleteFormation(id);
         return ResponseEntity.noContent().build();
