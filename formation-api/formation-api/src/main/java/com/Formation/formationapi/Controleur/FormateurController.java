@@ -2,7 +2,10 @@ package com.Formation.formationapi.Controleur;
 
 import com.Formation.formationapi.Modele.entity.Formateur;
 import com.Formation.formationapi.service.FormateurService;
+import com.Formation.formationapi.Exceptions.ResourceNotFoundException;
+import com.Formation.formationapi.Exceptions.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,47 +25,64 @@ public class FormateurController {
         this.formateurService = formateurService;
     }
 
-    // Get all formateurs
     @GetMapping
-    public List<Formateur> getAllFormateurs() {
-        return formateurService.getAllFormateurs();
+    public ResponseEntity<List<Formateur>> getAllFormateurs() {
+        List<Formateur> formateurs = formateurService.getAllFormateurs();
+        return ResponseEntity.status(HttpStatus.OK).body(formateurs);
     }
 
-    // Get formateur by ID
     @GetMapping("/{id}")
     public ResponseEntity<Formateur> getFormateurById(@PathVariable Long id) {
-        return formateurService.getFormateurById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        if (id == null || id <= 0) {
+            throw new ValidationException("Invalid formateur ID: " + id);
+        }
+        Optional<Formateur> formateur = formateurService.getFormateurById(id);
+        if (formateur.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(formateur.get());
+        } else {
+            throw new ResourceNotFoundException("Formateur not found with id: " + id);
+
+        }
     }
 
-    // Create new formateur
     @PostMapping
-    public ResponseEntity<Formateur> createFormateur(@RequestBody Formateur formateur) {
+    public ResponseEntity<Formateur> createFormateur(@Valid @RequestBody Formateur formateur) {
+        if (formateur.getNom() == null || formateur.getNom().trim().isEmpty()) {
+            throw new ValidationException("Le nom du formateur est obligatoire");
+        }
+        if (formateur.getEmail() == null || formateur.getEmail().trim().isEmpty()) {
+            throw new ValidationException("L'email du formateur est obligatoire");
+        }
+        
         Formateur newFormateur = formateurService.createFormateur(formateur);
-        return ResponseEntity.created(null).body(newFormateur);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newFormateur);
     }
 
-    // Update formateur
     @PutMapping("/{id}")
     public ResponseEntity<Formateur> updateFormateur(@PathVariable Long id, 
                                                    @Valid @RequestBody Formateur formateur) {
-        return formateurService.getFormateurById(id)
-                .map(existing -> {
-                    formateur.setId(id);
-                    return ResponseEntity.ok(formateurService.updateFormateur(formateur));
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        Formateur existingFormateur = formateurService.getFormateurById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Formateur not found with id: " + id));
+        
+        if (formateur.getNom() != null) {
+            existingFormateur.setNom(formateur.getNom());
+        }
+        if (formateur.getEmail() != null) {
+            existingFormateur.setEmail(formateur.getEmail());
+        }
+        if (formateur.getSpecialite() != null) {
+            existingFormateur.setSpecialite(formateur.getSpecialite());
+        }
+        
+        return ResponseEntity.ok(formateurService.updateFormateur(existingFormateur));
     }
 
-    // Delete formateur
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFormateur(@PathVariable Long id) {
-        Optional<Formateur> formateur = formateurService.getFormateurById(id);
-        if (formateur.isPresent()) {
-            formateurService.deleteFormateur(id);
-            return ResponseEntity.noContent().build();
+        if (!formateurService.getFormateurById(id).isPresent()) {
+            throw new ResourceNotFoundException("Formateur not found with id: " + id);
         }
-        return ResponseEntity.notFound().build();
+        formateurService.deleteFormateur(id);
+        return ResponseEntity.noContent().build();
     }
 }
