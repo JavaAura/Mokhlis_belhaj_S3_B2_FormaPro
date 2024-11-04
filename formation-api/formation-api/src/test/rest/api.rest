@@ -1,0 +1,56 @@
+### Variables globales
+@baseUrl = http://localhost:8085/api
+@contentType = application/json
+
+### 1. Test Formations API ###
+
+# Create new formation
+POST {{baseUrl}}/formations
+Content-Type: {{contentType}}
+
+{
+    "titre": "Formation Java Spring Boot",
+    "niveau": "Intermédiaire",
+    "prerequis": "Bases Java, POO",
+    "capaciteMin": 5,
+    "capaciteMax": 15,
+    "dateDebut": "2024-04-15",
+    "dateFin": "2024-09-30",
+    "formateur": {
+        "id": 1
+    },
+    "statut": "PLANIFIE"
+}
+
+###
+# Get all formations
+GET {{baseUrl}}/formations
+Content-Type: {{contentType}}
+
+###
+# Get formation by ID
+GET {{baseUrl}}/formations/1
+Content-Type: {{contentType}}
+
+###
+# Update formation
+PUT {{baseUrl}}/formations/1
+Content-Type: {{contentType}}
+
+{
+    "titre": "Formation Java Spring Boot Avancé",
+    "niveau": "Avancé",
+    "prerequis": "Java 8+, Spring Core",
+    "capaciteMin": 5,
+    "capaciteMax": 12,
+    "dateDebut": "2024-04-15",
+    "dateFin": "2024-09-30",
+    "formateur": {
+        "id": 1
+    },
+    "statut": "PLANIFIE"
+}
+
+###
+# Delete formation
+DELETE {{baseUrl}}/formations/1
