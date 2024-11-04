@@ -91,6 +91,22 @@ class FormationServiceTest {
     }
 
     @Test
+    void getFormationsByDate_ShouldReturnListOfFormations() {
+        // Arrange
+        Date startDate = new Date();
+        Date endDate = new Date(startDate.getTime() + 86400000); // Add 1 day in milliseconds
+        List<Formation> expectedFormations = Arrays.asList(formation);
+        when(formationRepository.findByDateDebutBetween(startDate, endDate)).thenReturn(expectedFormations);
+
+        // Act
+        List<Formation> actualFormations = formationService.getFormationsByDate(startDate, endDate);
+
+        // Assert
+        assertEquals(expectedFormations, actualFormations);
+        verify(formationRepository).findByDateDebutBetween(startDate, endDate);
+    }
+
+    @Test
     void deleteFormation_ShouldCallRepositoryDelete() {
         // Arrange
         Long id = 1L;

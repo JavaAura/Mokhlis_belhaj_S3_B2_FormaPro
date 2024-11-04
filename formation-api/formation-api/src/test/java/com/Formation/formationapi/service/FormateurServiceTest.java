@@ -85,6 +85,34 @@ class FormateurServiceTest {
     }
 
     @Test
+    void getFormateurBySpecialite_ShouldReturnListOfFormateurs() {
+        // Arrange
+        List<Formateur> expectedFormateurs = Arrays.asList(formateur);
+        when(formateurRepository.findBySpecialite("Java")).thenReturn(expectedFormateurs);
+
+        // Act
+        List<Formateur> actualFormateurs = formateurService.getFormateurBySpecialite("Java");
+
+        // Assert
+        assertEquals(expectedFormateurs, actualFormateurs);
+        verify(formateurRepository).findBySpecialite("Java");
+    }
+
+    @Test
+    void updateFormateur_ShouldReturnUpdatedFormateur() {
+        // Arrange
+        when(formateurRepository.save(any(Formateur.class))).thenReturn(formateur);
+
+        // Act
+        Formateur updatedFormateur = formateurService.updateFormateur(formateur);
+
+        // Assert
+        assertNotNull(updatedFormateur);
+        assertEquals(formateur, updatedFormateur);
+        verify(formateurRepository).save(formateur);
+    }
+
+    @Test
     void deleteFormateur_ShouldCallRepositoryDelete() {
         // Arrange
         Long id = 1L;

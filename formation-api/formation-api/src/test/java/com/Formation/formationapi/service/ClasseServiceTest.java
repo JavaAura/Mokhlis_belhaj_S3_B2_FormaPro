@@ -49,6 +49,9 @@ class ClasseServiceTest {
         formateur.setNom("Dupont");
         formateur.setPrenom("Jean");
         classe.setFormateur(formateur);
+
+        
+        
         
         pageable = PageRequest.of(0, 10);
     }
@@ -111,11 +114,17 @@ class ClasseServiceTest {
 
     @Test
     void updateClasse_ShouldReturnUpdatedClasse() {
+
+            
+        Formateur formateur1 = new Formateur();
+        formateur1.setId(2L);
+        formateur1.setNom("Dupont");
+        formateur1.setPrenom("Jean");
         // Arrange
         Classe updatedClasse = new Classe();
         updatedClasse.setNom("Updated Classe");
         updatedClasse.setNumSalle("B202");
-        
+        updatedClasse.setFormateur(formateur1);
         when(classeRepository.findById(1L)).thenReturn(Optional.of(classe));
         when(classeRepository.save(any(Classe.class))).thenReturn(updatedClasse);
 
@@ -128,6 +137,21 @@ class ClasseServiceTest {
         assertEquals(updatedClasse.getNumSalle(), result.getNumSalle());
         verify(classeRepository).findById(1L);
         verify(classeRepository).save(any(Classe.class));
+    }
+
+    @Test
+    void getClasseByNomContaining_ShouldReturnListOfClasses() {
+        // Arrange
+        String searchTerm = "Test";
+        List<Classe> expectedClasses = Arrays.asList(classe);
+        when(classeRepository.findByNomContaining(searchTerm)).thenReturn(expectedClasses);
+
+        // Act
+        List<Classe> actualClasses = classeService.getClasseByNomContaining(searchTerm);
+
+        // Assert
+        assertEquals(expectedClasses, actualClasses);
+        verify(classeRepository).findByNomContaining(searchTerm);
     }
 
     @Test
@@ -156,5 +180,21 @@ class ClasseServiceTest {
         assertEquals(classes.size(), savedClasses.size());
         assertEquals(classes, savedClasses);
         verify(classeRepository).saveAll(classes);
+    }
+
+    @Test
+    void findByNomAndNumSalle_ShouldReturnListOfClasses() {
+        // Arrange
+        String nom = "Classe Test";
+        String numSalle = "A101";
+        List<Classe> expectedClasses = Arrays.asList(classe);
+        when(classeRepository.findByNomAndNumSalle(nom, numSalle)).thenReturn(expectedClasses);
+
+        // Act
+        List<Classe> actualClasses = classeService.getClasseByNomAndNumSalle(nom, numSalle);
+        
+        // Assert
+        assertEquals(expectedClasses, actualClasses);
+        verify(classeRepository).findByNomAndNumSalle(nom, numSalle);
     }
 } 

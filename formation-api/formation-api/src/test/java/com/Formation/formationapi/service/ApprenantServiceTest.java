@@ -107,6 +107,32 @@ class ApprenantServiceTest {
     }
 
     @Test
+    void updateApprenant_ShouldReturnUpdatedApprenant() {
+        // Arrange
+        when(apprenantRepository.save(any(Apprenant.class))).thenReturn(apprenant);
+
+        // Act
+        Apprenant updatedApprenant = apprenantService.updateApprenant(apprenant);
+
+        // Assert
+        assertNotNull(updatedApprenant);
+        assertEquals(apprenant, updatedApprenant);
+        verify(apprenantRepository).save(apprenant);
+    }
+
+    @Test
+    void getApprenantByNom_ShouldReturnListOfApprenants() {
+
+        List<Apprenant> expectedApprenants = Arrays.asList(apprenant);
+        when(apprenantRepository.findByNom(anyString())).thenReturn(expectedApprenants);
+
+        List<Apprenant> actualApprenants = apprenantService.getApprenantByNom("Martin");
+
+        assertEquals(expectedApprenants, actualApprenants);
+        verify(apprenantRepository).findByNom("Martin");
+    }
+
+    @Test
     void deleteApprenant_ShouldCallRepositoryDelete() {
         // Arrange
         Long id = 1L;
