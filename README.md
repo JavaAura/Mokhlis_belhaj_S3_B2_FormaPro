@@ -152,7 +152,7 @@ La documentation de l'API est disponible via Swagger UI à l'adresse :
 
 ## Auteurs
 - Mokhlis Belhaj
-- github : [JavaAura](https://github.com/BelhajMokhlis)
+- github : [Mokhlis Belhaj](https://github.com/BelhajMokhlis)
 - linkedin : [Mokhlis Belhaj](https://www.linkedin.com/in/mokhlis-belhaj/)
 - Jira : [Mokhlis Belhaj](https://belhajmokhlis.atlassian.net/jira/software/projects/FOR/boards/171)
 
