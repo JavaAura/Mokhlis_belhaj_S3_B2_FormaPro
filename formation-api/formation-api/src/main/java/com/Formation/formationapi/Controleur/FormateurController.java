@@ -2,15 +2,20 @@ package com.Formation.formationapi.Controleur;
 
 import com.Formation.formationapi.Modele.entity.Formateur;
 import com.Formation.formationapi.service.FormateurService;
+
+
 import com.Formation.formationapi.Exceptions.ResourceNotFoundException;
 import com.Formation.formationapi.Exceptions.ValidationException;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -26,9 +31,13 @@ public class FormateurController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Formateur>> getAllFormateurs() {
-        List<Formateur> formateurs = formateurService.getAllFormateurs();
-        return ResponseEntity.status(HttpStatus.OK).body(formateurs);
+    public ResponseEntity<Page<Formateur>> getAllFormateurs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Formateur> formateurPage = formateurService.getAllFormateurs(pageable);
+        return ResponseEntity.ok(formateurPage);
     }
 
     @GetMapping("/{id}")
