@@ -14,6 +14,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,14 +51,17 @@ class FormateurServiceTest {
     void getAllFormateurs_ShouldReturnListOfFormateurs() {
         // Arrange
         List<Formateur> expectedFormateurs = Arrays.asList(formateur);
-        when(formateurRepository.findAll()).thenReturn(expectedFormateurs);
+        Page<Formateur> expectedPage = new PageImpl<>(expectedFormateurs);
+        Pageable pageable = PageRequest.of(0, 10);
+        when(formateurRepository.findAll(pageable)).thenReturn(expectedPage);
 
         // Act
-        List<Formateur> actualFormateurs = formateurService.getAllFormateurs();
+        Page<Formateur> actualFormateurs = formateurService.getAllFormateurs(pageable);
 
         // Assert
-        assertEquals(expectedFormateurs, actualFormateurs);
-        verify(formateurRepository).findAll();
+        assertEquals(expectedFormateurs, actualFormateurs.getContent());
+        assertEquals(1, actualFormateurs.getTotalPages());
+        verify(formateurRepository).findAll(pageable);
     }
 
     @Test

@@ -7,6 +7,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 import com.Formation.formationapi.Modele.entity.Formation;
 import com.Formation.formationapi.Repositories.FormationRepository;
@@ -21,8 +24,8 @@ public class FormationService {
         this.formationRepository = formationRepository;
     }
 
-    public List<Formation> getAllFormations() {
-        return formationRepository.findAll();
+    public Page<Formation> getAllFormations(Pageable pageable) {
+        return formationRepository.findAll(pageable);
     }
 
     public List<Formation> getFormationsByDate(Date dateDebut, Date dateFin) {

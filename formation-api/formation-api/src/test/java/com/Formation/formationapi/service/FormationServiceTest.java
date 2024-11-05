@@ -11,6 +11,10 @@ import com.Formation.formationapi.Modele.Enum.StatutFormation;
 import com.Formation.formationapi.Modele.entity.Formation;
 import com.Formation.formationapi.Repositories.FormationRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -20,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,15 +56,16 @@ class FormationServiceTest {
     @Test
     void getAllFormations_ShouldReturnListOfFormations() {
         // Arrange
-        List<Formation> expectedFormations = Arrays.asList(formation);
-        when(formationRepository.findAll()).thenReturn(expectedFormations);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Formation> expectedPage = mock(Page.class);
+        when(formationRepository.findAll(pageable)).thenReturn(expectedPage);
 
         // Act
-        List<Formation> actualFormations = formationService.getAllFormations();
+        Page<Formation> actualFormations = formationService.getAllFormations(pageable);
 
         // Assert
-        assertEquals(expectedFormations, actualFormations);
-        verify(formationRepository).findAll();
+        assertEquals(expectedPage, actualFormations);
+        verify(formationRepository).findAll(pageable);
     }
 
     @Test

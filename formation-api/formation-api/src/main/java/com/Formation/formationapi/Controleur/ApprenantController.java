@@ -12,7 +12,6 @@ import com.Formation.formationapi.Modele.entity.Apprenant;
 import com.Formation.formationapi.Exceptions.ResourceNotFoundException;
 import com.Formation.formationapi.Exceptions.ValidationException;
 
-import java.util.Optional;
 
 import javax.validation.Valid;
 

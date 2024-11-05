@@ -8,6 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import javax.validation.Valid;
 import java.util.List;
 import java.lang.reflect.Field;
@@ -31,9 +35,13 @@ public class FormationController {
 
     // Read all
     @GetMapping
-    public ResponseEntity<List<Formation>> getAllFormations() {
-        List<Formation> formations = formationService.getAllFormations();
-        return ResponseEntity.ok(formations);
+    public ResponseEntity<Page<Formation>> getAllFormations(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Formation> formationPage = formationService.getAllFormations(pageable);
+        return ResponseEntity.ok(formationPage);
     }
 
     // Read one

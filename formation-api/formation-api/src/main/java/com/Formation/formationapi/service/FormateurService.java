@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.Formation.formationapi.Modele.entity.Formateur;
@@ -22,8 +24,8 @@ public class FormateurService {
         this.formateurRepository = formateurRepository;
     }
 
-    public List<Formateur> getAllFormateurs() {
-        return formateurRepository.findAll();
+    public Page<Formateur> getAllFormateurs(Pageable pageable) {
+        return formateurRepository.findAll(pageable);
     }
 
     public List<Formateur> getFormateurBySpecialite(String specialite) {

@@ -11,6 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,12 +80,14 @@ public class FormationIntegrationTest {
     @Test
     void getAllFormations_ShouldReturnAllFormations() {
         // Act
-        List<Formation> formations = formationService.getAllFormations();
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<Formation> formations = formationService.getAllFormations(pageable);
 
         // Assert
         assertFalse(formations.isEmpty());
-        assertEquals(1, formations.size());
-        assertEquals("Formation Java", formations.get(0).getTitre());
+        assertEquals(1, formations.getTotalPages());
+        assertEquals("Formation Java", formations.getContent().get(0).getTitre());
     }
 
    
